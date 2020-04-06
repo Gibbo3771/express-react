@@ -57,6 +57,7 @@ export class ExpressReact {
    * This is cleared after every request using @clear
    */
   dataBag: ComponentData[];
+
   constructor() {
     this.registeredComponents = [];
     this.dataBag = [];
@@ -72,17 +73,6 @@ export class ExpressReact {
       module.exports &&
       typeof window === "undefined"
     );
-  };
-
-  /**
-   * Binds the express application instance to the renderer.
-   * This will configured the app locals to ensure helper functions are available
-   * in the view engine
-   * @param app The express instance to bind
-   */
-  express = (app: Application) => {
-    app.locals.react_render = this.render;
-    app.locals.inject_props = this.injectProps;
   };
 
   /**
@@ -170,17 +160,6 @@ export class ExpressReact {
    */
   clear = () => {
     this.dataBag = [];
-  };
-
-  /**
-   * Injects the props into the DOM.
-   * Used if data-reactroot is disabled.
-   * NOT RECOMMENDED
-   */
-  injectProps = () => {
-    const stringified = JSON.stringify(this.dataBag);
-    this.clear();
-    return `<script id="hydration">${stringified}</script>`;
   };
 }
 
