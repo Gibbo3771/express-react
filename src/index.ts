@@ -18,9 +18,6 @@ export interface RegisteredComponent<T = {}> {
   Component: React.ComponentType<T>;
 }
 
-/**
- * Component data that binds to the data-reactroot attributes for server side renderering
- */
 export interface ComponentData<T = {}> {
   /**
    * The name of the component that is to be hydrated, this component must first
@@ -42,15 +39,9 @@ export class ExpressReact {
    * All the components that are registered with the renderer
    */
   registeredComponents: RegisteredComponent[];
-  /**
-   * All component data that is stored and passed to the DOM inside the data-reactroot attributes.
-   * This is cleared after every request using @clear
-   */
-  dataBag: ComponentData[];
 
   constructor() {
     this.registeredComponents = [];
-    this.dataBag = [];
   }
 
   /**
@@ -102,7 +93,6 @@ export class ExpressReact {
       props: initialProps,
       options,
     };
-    this.dataBag.push(data);
     const registered = this.find(name);
     const partial = options.ssr
       ? React.createElement(registered.Component, initialProps)
@@ -142,13 +132,6 @@ export class ExpressReact {
       });
     });
   };
-
-  /**
-   * Clears @dataBag after every render pass, this is called interally
-   */
-  clear = () => {
-    this.dataBag = [];
-  };
 }
 
 const instance = new ExpressReact();
@@ -171,7 +154,6 @@ export const client = instance.client;
  */
 export default function <T extends any = {}>(staticProps?: T): RequestHandler {
   return (res, req, next) => {
-    instance.clear();
     req.locals.react_render = (
       name: string,
       initialProps?: any,
