@@ -2,6 +2,7 @@ import { renderToString } from "react-dom/server";
 import { hydrate, render } from "react-dom";
 import React from "react";
 import { Application, RequestHandler } from "express";
+import { RenderOptions, defaultOptions } from "./config";
 
 /**
  * A registered component
@@ -34,17 +35,6 @@ export interface ComponentData<T = {}> {
    * Options for this components render pass
    */
   options: RenderOptions;
-}
-
-/**
- * Options that are passed to the react_render helper function
- */
-export interface RenderOptions {
-  /**
-   * Determines if the component should be renderer using SSR
-   * Defaults to true
-   */
-  ssr: boolean;
 }
 
 export class ExpressReact {
@@ -105,7 +95,7 @@ export class ExpressReact {
   render = (
     name: string,
     initialProps?: any,
-    options: RenderOptions = { ssr: false }
+    options: RenderOptions = defaultOptions
   ) => {
     const data: ComponentData = {
       name,
@@ -124,6 +114,7 @@ export class ExpressReact {
       },
       partial
     );
+
     return renderToString(root);
   };
 
@@ -139,13 +130,10 @@ export class ExpressReact {
 
     document.addEventListener("DOMContentLoaded", () => {
       const propsElements = document.querySelectorAll(`[data-reactroot]`);
-
       propsElements.forEach((el) => {
         const attr = el.getAttribute("data-reactroot");
         const data: ComponentData = JSON.parse(attr);
         const { props, name, options } = data;
-        // console.log(data);
-
         const registered = this.find(name);
         options.ssr
           ? hydrate(React.createElement(registered.Component, props), el)
@@ -165,11 +153,36 @@ export class ExpressReact {
 
 const instance = new ExpressReact();
 
+/**
+ * Registers a component
+ * @param name The name to give the component
+ */
 export const registerComponent = instance.register;
+
+/**
+ * Should be called client side in order to hydrate or render the DOM.
+ * Without this, the page will NOT be reactive
+ */
 export const client = instance.client;
-export default function (): RequestHandler {
+
+/**
+ * Middleware for Express app. Position in the middleware stack does not affect the rendering process
+ * @param staticProps Props that you want to make available to every react component
+ */
+export default function <T extends any = {}>(staticProps?: T): RequestHandler {
   return (res, req, next) => {
-    req.locals.react_render = instance.render;
+    instance.clear();
+    req.locals.react_render = (
+      name: string,
+      initialProps?: any,
+      options: RenderOptions = defaultOptions
+    ) => {
+      return instance.render(
+        name,
+        { ...staticProps, ...initialProps },
+        options
+      );
+    };
     next();
   };
 }
