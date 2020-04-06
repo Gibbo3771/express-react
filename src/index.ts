@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { hydrate, render } from "react-dom";
 import React from "react";
-import { Application, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { RenderOptions, defaultOptions } from "./config";
 
 /**
@@ -74,6 +74,10 @@ export class ExpressReact {
    * @param name The name to give the component
    */
   register = <T extends {} = {}>(component: RegisteredComponent<T>): void => {
+    if (this.registeredComponents.find((c) => c.name === component.name))
+      throw new Error(
+        `Component already registered with the name "${component.name}". Make sure you are not registered the same component twice, or using the same name for two different components`
+      );
     this.registeredComponents.push(component);
   };
 
