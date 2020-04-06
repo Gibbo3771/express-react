@@ -47,7 +47,7 @@ export interface RenderOptions {
   ssr: boolean;
 }
 
-export class ExpressPartialRenderer {
+export class ExpressReact {
   /**
    * All the components that are registered with the renderer
    */
@@ -184,7 +184,7 @@ export class ExpressPartialRenderer {
   };
 }
 
-const instance = new ExpressPartialRenderer();
+const instance = new ExpressReact();
 
 export const registerComponent = instance.register;
 export const client = instance.client;
