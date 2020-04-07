@@ -72,4 +72,11 @@ describe("ExpressReact", () => {
       );
     });
   });
+
+  describe.skip("Test render SSR functionality", () => {
+    test.skip("TODO", () => {});
+  });
+  describe.skip("Test client render", () => {
+    test.skip("TODO", () => {});
+  });
 });
