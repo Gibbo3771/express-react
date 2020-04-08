@@ -26,7 +26,6 @@ import { renderToString } from "react-dom/server";
 import { hydrate, render } from "react-dom";
 import React from "react";
 import { RequestHandler } from "express";
-import { RenderOptions, defaultOptions } from "./config";
 
 /**
  * A registered component
@@ -57,6 +56,21 @@ export interface ComponentData<T = {}> {
    */
   options: RenderOptions;
 }
+
+/**
+ * Options that are passed to the react_render helper function
+ */
+export interface RenderOptions {
+  /**
+   * Determines if the component should be renderer using SSR
+   * Defaults to true
+   */
+  ssr: boolean;
+}
+
+export const defaultOptions: RenderOptions = {
+  ssr: true,
+};
 
 export class ExpressReact {
   /**
