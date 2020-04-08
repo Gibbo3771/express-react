@@ -1,6 +1,6 @@
 {
   "name": "@brawcode/express-react",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -37,6 +37,9 @@
     "ts-node": "^8.6.2",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "Stephen Gibson",
   "license": "MIT"
